@@ -4,7 +4,7 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as lavaShader from './lavaShader';
-import { emitParams, emit, initLavaTube } from './emit';
+import { flowParams, flow, initLavaTube } from './flow';
 
 const scene = new THREE.Scene(),
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 ),
@@ -128,8 +128,8 @@ function createLavaTube (positions=[]) {
 
 function updateLavaSurfaceHeight () {
     if (!lavaSurface) return;
-    if (lavaSurface.position.y >= emitParams.height) return;
-    lavaSurface.position.y = emitParams.height;
+    if (lavaSurface.position.y >= flowParams.height) return;
+    lavaSurface.position.y = flowParams.height;
 }
 
 function animate() {
@@ -149,7 +149,7 @@ function animate() {
         count += 0.1
     })
 
-    emit();
+    flow();
     updateLavaSurfaceHeight();
     
     controls.update();

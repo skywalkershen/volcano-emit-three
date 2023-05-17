@@ -1,7 +1,7 @@
-# Vue 3 + Vite
-
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+# Resources used
+* [volcano model](https://sketchfab.com/3d-models/volcan-interno-3e0c29438c0d4e00a7ab3c73a0545a9c#download)
+* 
+# Reference
+* [Blendshaped lava flow](https://sketchfab.com/3d-models/rock-cycles-land-75cc83d0d21f47f68a58b80a1eccf8a9)
+* [babylon shader example](https://aristeksystems.com/iframe/volcano/index.html)
+* [lava shader and emitter example](https://cx20.github.io/webgl-mountain-examples/jsdo.it/cx20/GhZA/)

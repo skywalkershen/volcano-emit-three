@@ -1,7 +1,6 @@
 <template>
   <canvas id="app" ref="appRef"></canvas>
 </template>
-
 <script setup>
   import {ref} from 'vue'
   import {init} from './composables'

@@ -4,20 +4,26 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as lavaShader from './lavaShader';
+import { emitParams, emit, initLavaTube } from './emit';
 
 const scene = new THREE.Scene(),
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 ),
     clock = new THREE.Clock(),
     gltfLoader = new GLTFLoader(),
-    textureLoader = new THREE.TextureLoader();
+    textureLoader = new THREE.TextureLoader(),
+    surfaceHeightMax = 3.8;
+
+window.devCamera = camera;
 
 let controls,
     renderer,
     lavaUniforms,
     lavaSurfaceUniforms,
     count = 0,
-    surfaceGeometry;
-
+    surfaceGeometry,
+    lavaMaterial,
+    lavaSurface;
+createLavaMaterial();
 loadModel();    
 export function init (containerRef) {
     onMounted(() => {
@@ -37,7 +43,8 @@ export function init (containerRef) {
         controls = new OrbitControls( camera, renderer.domElement );
         controls.enablePan = true;
         controls.enableZoom = true;
-
+        window.devControls = controls;
+        camera.position.set(-6.128432520654207, 3.039912832619679, 10.32804205569547);
 
         animate();
     })
@@ -48,12 +55,19 @@ function loadModel () {
         let model = gltf.scene;
         scene.add( gltf.scene );
         let lavaBody = model.getObjectByName('Sphere008_Wall_Paint_0'),
-            lavaTube = model.getObjectByName('LavaTube'),
-            lavaSurface = model.getObjectByName('LavaSurface')
-        loadAndApplyLavaShader([lavaBody, lavaTube, lavaSurface]);
+            lavaTubeOrig = model.getObjectByName('LavaTube'),
+            lavaTube = initLavaTube();
+        lavaSurface = model.getObjectByName('LavaSurface');
+        
+        lavaBody.material = lavaMaterial;
+        lavaTubeOrig.material = lavaMaterial;
+        lavaTube.material = lavaMaterial;
+        lavaSurface.material = lavaMaterial;
+        lavaTubeOrig.parent.add(lavaTube);
+        lavaTube.position.set(-1.527, 0.0008, 1.1215);
         // loadAndApplyLavaSurfaceShader(lavaSurface);
 
-       
+        window.lavaSurface = lavaSurface;
         window.devModel = gltf.scene
     } );
 }
@@ -86,7 +100,7 @@ async function loadAndApplyLavaSurfaceShader (mesh) {
 
     window.devlavaSurfaceUniforms = lavaSurfaceUniforms;
 }
-async function loadAndApplyLavaShader (meshes=[]) {
+async function createLavaMaterial () {
     lavaUniforms = {
         'fogDensity': { value: 0.45 },
         'fogColor': { value: new THREE.Vector3( 0, 0, 0 ) },
@@ -99,18 +113,23 @@ async function loadAndApplyLavaShader (meshes=[]) {
     lavaUniforms[ 'texture1' ].value.wrapS = lavaUniforms[ 'texture1' ].value.wrapT = THREE.RepeatWrapping;
     lavaUniforms[ 'texture2' ].value.wrapS = lavaUniforms[ 'texture2' ].value.wrapT = THREE.RepeatWrapping;
 
-    const material = new THREE.ShaderMaterial( {
+    lavaMaterial = new THREE.ShaderMaterial( {
 
         uniforms: lavaUniforms,
         vertexShader: lavaShader.vert,
         fragmentShader: lavaShader.frag
 
     } );
+}
 
-    meshes.forEach(mesh => {
-        mesh.material = material;
-    })
-    window.devlavaUniforms = lavaUniforms;
+function createLavaTube (positions=[]) {
+
+}
+
+function updateLavaSurfaceHeight () {
+    if (!lavaSurface) return;
+    if (lavaSurface.position.y >= emitParams.height) return;
+    lavaSurface.position.y = emitParams.height;
 }
 
 function animate() {
@@ -129,6 +148,10 @@ function animate() {
   
         count += 0.1
     })
+
+    emit();
+    updateLavaSurfaceHeight();
+    
     controls.update();
     renderer.render( scene, camera );
 
